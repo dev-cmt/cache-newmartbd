@@ -1,0 +1,86 @@
+@extends('frontEnd.layouts.master')
+
+@section('title')
+    Order Confirmed
+@endsection
+@if(request()->is('confirm-order'))
+    @section('style')
+        <style>
+            @media (max-width: 575.98px) {
+                footer {
+                    display: none;
+                }
+            }
+        </style>
+    @endsection
+@endif
+@section('body')
+    <section class="py-md-5 confirm-order">
+        <div class="cart-section">
+            <div class="container">
+                <div class="row py-md-5">
+                    <div class="col-12 text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="70" height="90" fill="#008000" class="bi bi-bag-check" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M10.854 8.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.793l2.646-2.647a.5.5 0 0 1 .708 0z"></path>
+                            <path
+                                d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z"></path>
+                        </svg>
+                        <h1 class="mb-md-4" style="color: green;font-weight: bold">Order Place Successfully</h1>
+                        <p style="color: green">আপনার অর্ডারটি সফলভাবে সম্পন্ন হয়েছে আমাদের কল সেন্টার থেকে ফোন করে আপনার অর্ডারটি কনফার্ম করা হবে</p>
+                        <a href="{{route('home')}}" class="btn btn-info px-5">আরো শপিং করুন</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+@endsection
+
+@section('script')
+    @if (isset($order))
+        <script>
+            dataLayer.push({ ecommerce: null });
+            dataLayer.push({
+                'event': 'purchase',
+                'action_source': 'website',
+                'order_id': '{{ $order->invoice_id }}',
+                'event_id': '{{ $order->id }}',
+                'ecommerce': {
+                    'transaction_id': '{{ $order->invoice_id }}',
+                    'affiliation': '{{ $web_settings->site_name ?? 'Unisale Mart' }}',
+                    'value': {{ $order->total }},
+                    'tax': 0,
+                    'shipping': {{ $order->shipping_cost ?? 0 }},
+                    'currency': 'BDT',
+                    'items': [
+                        @foreach ($order->get_products as $item)
+                        {
+                            'item_id': '{{ $item->get_product->id ?? '' }}',
+                            'item_name': '{{ $item->get_product->name ?? '' }}',
+                            'item_category': '{{ $item->get_product->get_categories->first()->category_name ?? '' }}',
+                            'price': {{ $item->price }},
+                            'quantity': {{ $item->qty }}
+                        },
+                        @endforeach
+                    ]
+                },
+                'customer_information': {
+                    'first_name': '{{ $order->customer_name ?? '' }}',
+                    'last_name': '{{ $order->customer_name ?? '' }}',
+                    'phone': '{{ $order->customer_phone ?? '' }}',
+                    'address_1': '{{ $order->customer_address ?? '' }}',
+                    'city': '{{ $order->customer_address ?? '' }}',
+                    'country': 'Bangladesh',
+                    'country_code': 'BD'
+                }
+            });
+
+            fbq('track', 'Purchase', {
+                content_ids: [@foreach ($order->get_products as $item) '{{ $item->get_product->id ?? '' }}', @endforeach],
+                content_type: 'product',
+                value: {{ $order->total }},
+                currency: 'BDT'
+            });
+        </script>
+    @endif
+@endsection

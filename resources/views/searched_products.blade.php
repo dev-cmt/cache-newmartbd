@@ -1,0 +1,72 @@
+@extends('frontEnd.layouts.master')
+
+@section('title')
+    Searched Products
+@endsection
+
+@section('body')
+    <section>
+        <div class="category_breadcrumb">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <p>
+                            <a href="{{route('home')}}">Home</a>
+                            /
+                            Searched For "{{$query}}"
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="main-products-section">
+            <div class="container-fluid">
+                <div class="row m-0">
+                    @if($data->count() > 0)
+                        @foreach($data as $item)
+                            <div class="col-md-2 col-6 main-product">
+                                <div class="main-product-inner-wrapper text-center">
+                                    <a href="{{route('single.product',[$item->slug,$item->product_id])}}">
+                                        <img src="{{$item->file_url ? asset($item->file_url) : asset('frontEnd/images/no_image.png')}}" alt="{{$item->name}}">
+                                    </a>
+                                    @if($item->sale_price != 0)
+                                        <p class="mb-0" style="text-decoration: line-through;color: #b8b8b8">{{$web_settings->currency_sign}} {{$item->price}}</p>
+                                        <p class="font-weight-bold mb-0" style="color: #ed362c">{{$web_settings->currency_sign}} {{$item->sale_price}}</p>
+                                    @else
+                                        <p class="font-weight-bold mb-0" style="margin-top: 24px;color: #ed362c">{{$web_settings->currency_sign}} {{$item->price}}</p>
+                                    @endif
+                                    <p class="mb-0 prod_name"><a href="{{route('single.product',[$item->slug,$item->product_id])}}">{{$item->name}}</a></p>
+                                    <form action="{{route('add.cart',$item->product_id)}}" method="post">
+                                        @csrf
+                                        <input type="hidden" name="qty" value="1">
+                                        <input type="submit" class="btn btn-sm w-100 mb-2 order_now_btn" name="order_now" value="অর্ডার করুন">
+                                    </form>
+                                </div>
+                            </div>
+                        @endforeach
+                    @else
+                        <div class="col-12 text-center py-md-5 my-md-5">
+                            <h2 class="mb-md-4" style="color: red;font-weight: bold">দুঃখিত কোন পণ্য পাওয়া যায়নি</h2>
+                            <a href="{{route('home')}}" class="btn btn-info px-5">হোম</a>
+                        </div>
+                    @endif
+                </div>
+
+                <div class="row">
+                    <div class="col-12 mt-3">
+                        {{$data->links()}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+@endsection
+
+
+
+@section('script')
+
+@endsection
