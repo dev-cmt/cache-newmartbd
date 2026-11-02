@@ -1,4 +1,4 @@
-@extends('frontEnd.layouts.master')
+@extends('layouts.master')
 
 @section('title')
     All Hot Deals
@@ -28,8 +28,8 @@
                     @foreach($data as $item)
                         <div class="col-md-2 col-6 main-product">
                             <div class="main-product-inner-wrapper text-center">
-                                <a href="{{route('single.product',[$item->slug,$item->id])}}">
-                                    <img src="{{$item->get_thumb ? asset($item->get_thumb->file_url) : asset('frontEnd/images/no_image.png')}}" alt="{{$item->name}}">
+                                <a href="{{route('product.details',[$item->slug,$item->id])}}">
+                                    <img src="{{$item->image_url ?? asset('frontEnd/images/no_image.png')}}" alt="{{$item->name}}">
                                 </a>
                                 @if($item->sale_price != 0)
                                     <p class="mb-0" style="text-decoration: line-through;color: #b8b8b8">{{$web_settings->currency_sign}} {{$item->price}}</p>
@@ -37,7 +37,7 @@
                                 @else
                                     <p class="font-weight-bold mb-0" style="margin-top: 24px;color: #ed362c">{{$web_settings->currency_sign}} {{$item->price}}</p>
                                 @endif
-                                <p class="mb-0 prod_name"><a href="{{route('single.product',[$item->slug,$item->id])}}">{{$item->name}}</a></p>
+                                <p class="mb-0 prod_name"><a href="{{route('product.details',[$item->slug,$item->id])}}">{{$item->name}}</a></p>
                                 <form action="{{route('add.cart',$item->id)}}" method="post">
                                     @csrf
                                     <input type="hidden" name="qty" value="1">

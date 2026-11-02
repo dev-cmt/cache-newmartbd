@@ -1,10 +1,9 @@
-@extends('frontEnd.layouts.master')
+@extends('layouts.master')
 
 @section('title')
     Checkout
 @endsection
 @section('style')
-    <link rel="stylesheet" href="{{asset('backEnd/assets/vendor/select2/css/select2.css')}}">
     <style>
         /* Sticky Mobile Submit Button */
         @media (max-width: 767.98px) {
@@ -21,6 +20,34 @@
         }
     </style>
 @endsection
+
+@if(\Cart::getContent()->count() > 0)
+@section('tracking')
+    <script>
+        dataLayer.push({ecommerce: null});  // Clear the previous ecommerce object.
+        dataLayer.push({
+            event: "begin_checkout",
+            ecommerce: {
+                currency: "BDT",
+                value: {{ session('api_begin_checkout_data')['value'] ?? 0 }},
+                coupon: "",
+                items: {!! session('api_begin_checkout_data')['products'] ?? '[]' !!}
+            }
+        });
+        if (typeof fbq === 'function') {
+            var checkoutItems = {!! session('api_begin_checkout_data')['products'] ?? '[]' !!};
+            fbq('track', 'InitiateCheckout', {
+                content_ids: checkoutItems.map(function (item) { return item.item_id; }),
+                content_type: 'product',
+                num_items: checkoutItems.reduce(function (total, item) { return total + (Number(item.quantity) || 0); }, 0),
+                value: {{ session('api_begin_checkout_data')['value'] ?? 0 }},
+                currency: 'BDT'
+            });
+        }
+    </script>
+@endsection
+@endif
+
 @section('body')
     @if(\Cart::getContent()->count() > 0)
         <section>
@@ -56,26 +83,11 @@
                                             <span class="text-danger font-weight-bold">{{$message}}</span>
                                             @enderror
                                         </div>
-                                        {{--<div class="form-group">
-                                            <select name="district" id="district" class="form-control select2" required>
-                                                <option value="">আপনার জেলা সিলেক্ট করুন</option>
-                                                @foreach($districts as $district)
-                                                    <option value="{{$district->name}}">{{$district->name}}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>--}}
+
                                         <div class="form-group">
                                             <label for="customer_name">ঠিকানা <span class="text-danger">*</span></label>
                                             <textarea class="form-control" id="customer_address" name="customer_address" placeholder="আপনার সম্পূর্ণ ঠিকানা লিখুন" required></textarea>
                                         </div>
-
-                                        {{--<div class="form-group">
-                                            <select name="shipping_method" id="shipping_method" class="form-control" required>
-                                                @foreach($shipping_methods as $item)
-                                                    <option value="{{$item->id}}">{{$item->text}}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>--}}
 
                                         <div class="form-group">
                                             @foreach($shipping_methods as $key => $item)
@@ -88,7 +100,7 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <textarea class="form-control" name="order_note" placeholder="আপনার নোট লিখুন" required></textarea>
+                                            <textarea class="form-control" name="order_note" placeholder="আপনার নোট লিখুন"></textarea>
                                         </div>
 
                                         <button type="submit" class="btn btn-success w-100 mb-2" style="height: 50px" id="conf_order_btn">অর্ডার কনফার্ম করুন</button>
@@ -121,9 +133,20 @@
                                                     <a href="{{route('cart.item.delete',$item->id)}}"><i class="fa fa-trash-o text-danger"></i></a>
                                                 </td>
                                                 <td class="text-left">
-                                                    <img width="35" src="{{$item->associatedModel->get_thumb->file_url}}" alt="">
+                                                    @php
+                                                        $assoc = $item->associatedModel ?? null;
+                                                        $thumbUrl = null;
+                                                        if ($assoc && !($assoc instanceof \__PHP_Incomplete_Class)) {
+                                                            $thumbUrl = is_object($assoc) ? ($assoc->image ?? ($assoc->get_thumb->file_url ?? null)) : null;
+                                                        }
+                                                        $itemSlug = is_object($assoc) && !($assoc instanceof \__PHP_Incomplete_Class) ? ($assoc->slug ?? '') : '';
+                                                        $itemId   = is_object($assoc) && !($assoc instanceof \__PHP_Incomplete_Class) ? ($assoc->id ?? $item->id) : $item->id;
+                                                    @endphp
+                                                    @if($thumbUrl)
+                                                        <img width="35" src="{{$thumbUrl}}" alt="">
+                                                    @endif
                                                     <a style="font-size: 12px"
-                                                    href="{{route('single.product',[$item->associatedModel->slug,$item->associatedModel->id])}}">{{$item->name}}</a>
+                                                    href="{{route('product.details', [$itemSlug, $itemId])}}">{{$item->name}}</a>
                                                 </td>
                                                 <td>{{$item->price}}</td>
                                                 <td width="15%" class="cart_qty">
@@ -183,39 +206,7 @@
     @endif
 @endsection
 
-
-
 @section('script')
-    <script src="{{asset('backEnd/assets/vendor/select2/js/select2.min.js')}}"></script>
-    <script>
-        dataLayer.push({ ecommerce: null });
-        dataLayer.push({
-            'event': 'begin_checkout',
-            'ecommerce': {
-                'currency': 'BDT',
-                'value': {{ \Cart::getTotal() }},
-                'items': [
-                    @foreach (\Cart::getContent() as $item)
-                    {
-                        'item_id': '{{ $item->associatedModel->id }}',
-                        'item_name': '{{ $item->name }}',
-                        'item_category': '{{ $item->associatedModel->get_categories->first()->category_name ?? '' }}',
-                        'price': {{ $item->price }},
-                        'quantity': {{ $item->quantity }}
-                    },
-                    @endforeach
-                ]
-            }
-        });
-
-        fbq('track', 'InitiateCheckout', {
-            content_ids: [@foreach (\Cart::getContent() as $item) '{{ $item->associatedModel->id }}', @endforeach],
-            content_type: 'product',
-            value: {{ \Cart::getTotal() }},
-            currency: 'BDT',
-            num_items: {{ \Cart::getContent()->count() }}
-        });
-    </script>
     <script>
         $('.select2').select2();
         $(document).ready(function () {

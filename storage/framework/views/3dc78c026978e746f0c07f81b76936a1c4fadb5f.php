@@ -1,287 +1,179 @@
-<?php
-    // $categories is injected globally from AppServiceProvider via AppApiService.
-    // Do NOT re-query here — it would override API data with a DB call.
-    $categories = $categories ?? collect([]);
-?>
-<?php if($web_settings->marquee_text ?? null): ?>
-    <div class="bg-warning">
-        <marquee behavior="scroll" direction="left">
-            <?php echo e($web_settings->marquee_text ?? ""); ?>
 
-        </marquee>
-    </div>
-<?php endif; ?>
 <header>
-    <?php if(!request()->is('product*')): ?>
-        <div class="header-top">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-4 col-7">
-                        <div class="header-left">
-                            <p>Welcome to <?php echo e(config('app.name')); ?></p>
-                        </div>
-                    </div>
-
-                    <div class="col-md-8 col-5">
-                        <div class="header-right">
-                            <ul>
-                                <li>
-                                    <i class="fa fa-home"></i>
-                                    <a href="<?php echo e(route('home')); ?>">
-                                        <span>Home</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <i class="fa fa-envelope"></i>
-                                    <a href="">
-                                        <span>Contact</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <i class="fa fa-search"></i>
-                                    <a href="">
-                                        <span>Track Order</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <i class="fa fa-shopping-cart"></i>
-                                    <a href="">
-                                        <span>Checkout</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <i class="fa fa-user"></i>
-                                    <a href="">
-                                        <span>Account</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-
-                        
-                        <div class="header-right-m">
-                            <ul>
-                                <li class="position-relative">
-                                    <i class="fa fa-user" id="account-btn"></i>
-                                    <div class="login-float">
-                                        <div class="card">
-                                            <div class="card-header">
-                                                <p>Login</p>
-                                            </div>
-                                            <div class="card-body">
-                                                <form action="" method="post">
-                                                    <?php echo csrf_field(); ?>
-                                                    <div class="form-group mb-2">
-                                                        <input type="text" class="form-control" placeholder="Mobile Number">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <input type="password" class="form-control" placeholder="Password">
-                                                    </div>
-                                                    <button type="submit" class="btn btn-info w-100 mb-3">Login</button>
-                                                    <p>New Customer? <a href="">Signup</a></p>
-                                                </form>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </li>
-                                <li class="position-relative">
-                                    <i class="fa fa-bars" id="header-top-menu-btn"></i>
-                                    <div class="header-top-menu-m">
-                                        <ul>
-                                            <li>
-                                                <span class="fa fa-home"></span>
-                                                <a href="<?php echo e(route('home')); ?>">
-                                                    <span>Home</span>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <span class="fa fa-envelope"></span>
-                                                <a href="">
-                                                    <span>Contact</span>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <span class="fa fa-search"></span>
-                                                <a href="">
-                                                    <span>Track Order</span>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <span class="fa fa-shopping-cart"></span>
-                                                <a href="">
-                                                    <span>Checkout</span>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <span class="fa fa-user"></span>
-                                                <a href="">
-                                                    <span>Account</span>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    <?php endif; ?>
+    
     <div class="header">
-        <div class="container">
-            <div class="row">
+        <div class="container-fluid">
+            <div class="row align-items-center">
                 <div class="col-4 d-md-none cat_menu_btn_m">
                     <ul>
                         <li>
-                            <i class="fa fa-bars" id="cat_menu_mobile_btn"></i>
+                            <svg fill="#000000" version="1.1" id="cat_menu_mobile_btn" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                 width="30" height="30" viewBox="0 0 606.191 606.191"
+                                 xml:space="preserve">
+                                <g>
+                                    <g>
+                                        <g>
+                                            <path d="M544.29,0.5H61.903c-32.059,0-58.14,26.082-58.14,58.14v64.75c0,32.059,26.082,58.14,58.14,58.14H544.29
+                                                c32.057,0,58.139-26.082,58.139-58.14V58.64C602.429,26.582,576.349,0.5,544.29,0.5z M559.589,123.39
+                                                c0,8.45-6.85,15.3-15.299,15.3H61.903c-8.45,0-15.3-6.85-15.3-15.3V58.64c0-8.45,6.85-15.3,15.3-15.3H544.29
+                                                c8.449,0,15.299,6.85,15.299,15.3V123.39z"/>
+                                            <path d="M544.29,182.03H61.903c-32.334,0-58.64-26.306-58.64-58.64V58.64C3.263,26.306,29.568,0,61.903,0H544.29
+                                                c32.333,0,58.639,26.306,58.639,58.64v64.75C602.929,155.725,576.623,182.03,544.29,182.03z M61.903,1
+                                                C30.12,1,4.263,26.857,4.263,58.64v64.75c0,31.783,25.857,57.64,57.64,57.64H544.29c31.782,0,57.639-25.857,57.639-57.64V58.64
+                                                C601.929,26.857,576.072,1,544.29,1H61.903z M544.29,139.19H61.903c-8.712,0-15.8-7.088-15.8-15.8V58.64
+                                                c0-8.712,7.088-15.8,15.8-15.8H544.29c8.712,0,15.799,7.088,15.799,15.8v64.75C560.089,132.103,553.002,139.19,544.29,139.19z
+                                                 M61.903,43.84c-8.161,0-14.8,6.639-14.8,14.8v64.75c0,8.161,6.639,14.8,14.8,14.8H544.29c8.16,0,14.799-6.639,14.799-14.8V58.64
+                                                c0-8.161-6.639-14.8-14.799-14.8H61.903z"/>
+                                        </g>
+                                        <g>
+                                            <path d="M544.29,212.582H61.903c-32.059,0-58.14,26.082-58.14,58.14v64.75c0,32.059,26.082,58.141,58.14,58.141H544.29
+                                                c32.057,0,58.139-26.082,58.139-58.141v-64.75C602.429,238.663,576.349,212.582,544.29,212.582z M559.589,335.471
+                                                c0,8.449-6.85,15.301-15.299,15.301H61.903c-8.45,0-15.3-6.852-15.3-15.301v-64.75c0-8.45,6.85-15.3,15.3-15.3H544.29
+                                                c8.449,0,15.299,6.85,15.299,15.3V335.471z"/>
+                                            <path d="M544.29,394.111H61.903c-32.334,0-58.64-26.306-58.64-58.641v-64.75c0-32.334,26.306-58.64,58.64-58.64H544.29
+                                                c32.333,0,58.639,26.306,58.639,58.64v64.75C602.929,367.806,576.623,394.111,544.29,394.111z M61.903,213.082
+                                                c-31.783,0-57.64,25.857-57.64,57.64v64.75c0,31.783,25.857,57.641,57.64,57.641H544.29c31.782,0,57.639-25.857,57.639-57.641
+                                                v-64.75c0-31.783-25.856-57.64-57.639-57.64H61.903z M544.29,351.271H61.903c-8.712,0-15.8-7.088-15.8-15.801v-64.75
+                                                c0-8.712,7.088-15.8,15.8-15.8H544.29c8.712,0,15.799,7.088,15.799,15.8v64.75C560.089,344.184,553.002,351.271,544.29,351.271z
+                                                 M61.903,255.921c-8.161,0-14.8,6.639-14.8,14.8v64.75c0,8.161,6.639,14.801,14.8,14.801H544.29
+                                                c8.16,0,14.799-6.64,14.799-14.801v-64.75c0-8.161-6.639-14.8-14.799-14.8H61.903z"/>
+                                        </g>
+                                        <g>
+                                            <path d="M544.29,424.662H61.903c-32.059,0-58.14,26.082-58.14,58.141v64.75c0,32.059,26.082,58.139,58.14,58.139H544.29
+                                                c32.057,0,58.139-26.08,58.139-58.139v-64.75C602.429,450.744,576.349,424.662,544.29,424.662z M559.589,547.553
+                                                c0,8.449-6.85,15.299-15.299,15.299H61.903c-8.45,0-15.3-6.85-15.3-15.299v-64.75c0-8.451,6.85-15.301,15.3-15.301H544.29
+                                                c8.449,0,15.299,6.85,15.299,15.301V547.553z"/>
+                                            <path d="M544.29,606.191H61.903c-32.334,0-58.64-26.306-58.64-58.639v-64.75c0-32.335,26.306-58.641,58.64-58.641H544.29
+                                                c32.333,0,58.639,26.306,58.639,58.641v64.75C602.929,579.886,576.623,606.191,544.29,606.191z M61.903,425.162
+                                                c-31.783,0-57.64,25.857-57.64,57.641v64.75c0,31.782,25.857,57.639,57.64,57.639H544.29c31.782,0,57.639-25.856,57.639-57.639
+                                                v-64.75c0-31.783-25.856-57.641-57.639-57.641H61.903z M544.29,563.352H61.903c-8.712,0-15.8-7.087-15.8-15.799v-64.75
+                                                c0-8.713,7.088-15.801,15.8-15.801H544.29c8.712,0,15.799,7.088,15.799,15.801v64.75
+                                                C560.089,556.265,553.002,563.352,544.29,563.352z M61.903,468.002c-8.161,0-14.8,6.64-14.8,14.801v64.75
+                                                c0,8.16,6.639,14.799,14.8,14.799H544.29c8.16,0,14.799-6.639,14.799-14.799v-64.75c0-8.161-6.639-14.801-14.799-14.801H61.903z"
+                                            />
+                                        </g>
+                                    </g>
+                                </g>
+                            </svg>
                         </li>
                         <li>
-                            <i class="fa fa-search" id="search_mobile_btn"></i>
+                            <svg width="35" height="35" id="search_mobile_btn" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path opacity="0.1" d="M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z"
+                                      fill="#323232"/>
+                                <path d="M17 17L21 21" stroke="#323232" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z"
+                                      stroke="#323232" stroke-width="2"/>
+                            </svg>
                         </li>
                     </ul>
                 </div>
-                <div class="col-md-3 col-7 logo-m">
+                <div class="col-md-3 col-6 logo-m">
                     <div class="logo">
-                        <a href="<?php echo e(route('home')); ?>"><img src="<?php echo e($web_settings->get_logo ? asset($web_settings->get_logo->file_url) : asset('frontEnd/images/no_image.png')); ?>" alt=""></a>
+                        <a href="<?php echo e(route('home')); ?>"><img
+                                src="<?php echo e($web_settings->get_logo ? asset($web_settings->get_logo->file_url) : asset('frontEnd/images/no_image.png')); ?>" alt=""></a>
                     </div>
                 </div>
 
                 <div class="col-md-6 py-md-3 d-none d-md-block">
                     <div class="search">
                         <form action="<?php echo e(route('search')); ?>" method="get">
-                            <select name="category" id="category" class="search-select">
-                                <option value="">ক্যাটেগরীজ</option>
-                                <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <option value="<?php echo e($cat->id); ?>" <?php echo e(request('category') == $cat->id ? 'selected' : ''); ?>><?php echo e($cat->category_name); ?></option>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                            </select>
-                            <input type="text" name="query" class="search-input" placeholder="সার্চ করুন" value="<?php echo e(request('query', '')); ?>">
+                            <input type="text" name="query" class="search-input" placeholder="প্রোডাক্ট খুজুন...">
                             <button type="submit" class="search-btn"></button>
                         </form>
                     </div>
                 </div>
 
-                <div class="col-md-3 text-md-right text-center py-3 cart-m">
-                    <span class="cart-number d-none d-md-inline-block"><i class="fa fa-phone"></i> <?php echo e($web_settings->website_phone ?? null); ?></span>
+                <div class="col-md-3 text-md-right text-center py-3 cart-m d-flex justify-content-md-end">
+                    <a href="tel:<?php echo e($web_settings->website_phone ?? ''); ?>" class="cart-number ">
+                        <svg width="35" height="35" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M21.97 18.33C21.97 18.69 21.89 19.06 21.72 19.42C21.55 19.78 21.33 20.12 21.04 20.44C20.55 20.98 20.01 21.37 19.4 21.62C18.8 21.87 18.15 22 17.45 22C16.43 22 15.34 21.76 14.19 21.27C13.04 20.78 11.89 20.12 10.75 19.29C9.6 18.45 8.51 17.52 7.47 16.49C6.44 15.45 5.51 14.36 4.68 13.22C3.86 12.08 3.2 10.94 2.72 9.81C2.24 8.67 2 7.58 2 6.54C2 5.86 2.12 5.21 2.36 4.61C2.6 4 2.98 3.44 3.51 2.94C4.15 2.31 4.85 2 5.59 2C5.87 2 6.15 2.06 6.4 2.18C6.66 2.3 6.89 2.48 7.07 2.74L9.39 6.01C9.57 6.26 9.7 6.49 9.79 6.71C9.88 6.92 9.93 7.13 9.93 7.32C9.93 7.56 9.86 7.8 9.72 8.03C9.59 8.26 9.4 8.5 9.16 8.74L8.4 9.53C8.29 9.64 8.24 9.77 8.24 9.93C8.24 10.01 8.25 10.08 8.27 10.16C8.3 10.24 8.33 10.3 8.35 10.36C8.53 10.69 8.84 11.12 9.28 11.64C9.73 12.16 10.21 12.69 10.73 13.22C11.27 13.75 11.79 14.24 12.32 14.69C12.84 15.13 13.27 15.43 13.61 15.61C13.66 15.63 13.72 15.66 13.79 15.69C13.87 15.72 13.95 15.73 14.04 15.73C14.21 15.73 14.34 15.67 14.45 15.56L15.21 14.81C15.46 14.56 15.7 14.37 15.93 14.25C16.16 14.11 16.39 14.04 16.64 14.04C16.83 14.04 17.03 14.08 17.25 14.17C17.47 14.26 17.7 14.39 17.95 14.56L21.26 16.91C21.52 17.09 21.7 17.3 21.81 17.55C21.91 17.8 21.97 18.05 21.97 18.33Z"
+                                stroke="#292D32" stroke-width="1.5" stroke-miterlimit="10"/>
+                        </svg>
+                    </a>
                     <div class="cart d-inline-block position-relative">
                         <?php if(Cart::getContent()->count() > 0): ?>
                             <span class="badge badge-danger rounded-circle"><?php echo e(Cart::getContent()->count()); ?></span>
                         <?php endif; ?>
-                        <a href="<?php echo e(route('checkout')); ?>"><i style="color: #fdc525" class="fa fa-2x fa-shopping-cart"></i></a>
+                        <a href="<?php echo e(route('checkout')); ?>">
+                            
+                            <svg height="35" width="35" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                 viewBox="0 0 512 512" xml:space="preserve">
+                                <g>
+                                    <path class="st0" d="M491.615,95.732c-5.051-6.18-12.624-9.78-20.622-9.78H123.655l-11.827-40.616l-0.009-0.025
+	c-5.434-18.177-20.341-31.939-38.883-35.912L30.487,0.297c-7.2-1.537-14.28,3.039-15.817,10.23
+	c-1.536,7.182,3.039,14.271,10.231,15.808l42.449,9.101c9.05,1.935,16.309,8.651,18.958,17.506l77.589,266.549
+	c-1.749,0.814-3.43,1.706-5.06,2.674c-8.371,4.984-15.077,11.979-19.577,20.147c-4.296,7.768-6.588,16.564-6.801,25.639h-0.042
+	v1.384h0.034c0.178,7.08,1.68,13.89,4.313,20.095c4.194,9.916,11.172,18.313,19.968,24.264c8.796,5.943,19.476,9.433,30.86,9.424
+	h249.57c7.361,0,13.32-5.96,13.32-13.312c0-7.352-5.96-13.321-13.32-13.321h-249.57c-3.982,0-7.7-0.79-11.104-2.233
+	c-5.102-2.156-9.492-5.79-12.574-10.358c-2.954-4.381-4.686-9.56-4.839-15.231c0.153-6.766,2.309-12.633,6.095-17.327
+	c1.97-2.428,4.382-4.551,7.318-6.308c2.904-1.732,6.317-3.098,10.324-3.965l250.86-40.836
+	c16.402-2.674,29.426-15.197,32.737-31.472l30.682-150.848v-0.018c0.356-1.748,0.544-3.531,0.536-5.297
+	C497.635,106.506,495.537,100.537,491.615,95.732z"/>
+                                    <path class="st0" d="M218.402,444.785c-5.841-3.964-12.972-6.283-20.546-6.283c-5.043,0-9.907,1.028-14.314,2.896
+	c-6.605,2.792-12.191,7.445-16.148,13.303c-3.965,5.841-6.291,12.972-6.283,20.546c0,5.043,1.028,9.908,2.887,14.314
+	c2.801,6.606,7.446,12.2,13.304,16.156c5.849,3.956,12.98,6.291,20.554,6.283c5.043,0.008,9.9-1.028,14.305-2.896
+	c6.614-2.801,12.2-7.436,16.156-13.295c3.956-5.858,6.283-12.989,6.283-20.562c0-5.043-1.036-9.9-2.887-14.297
+	C228.913,454.336,224.269,448.75,218.402,444.785z M211.508,481.02c-1.12,2.64-3.005,4.924-5.382,6.52
+	c-2.378,1.604-5.162,2.521-8.269,2.53c-2.072,0-3.99-0.416-5.756-1.163c-2.649-1.112-4.942-3.014-6.538-5.382
+	c-1.595-2.378-2.512-5.171-2.521-8.278c0.009-2.072,0.416-3.99,1.163-5.756c1.112-2.649,3.006-4.933,5.382-6.529
+	c2.378-1.604,5.162-2.521,8.27-2.53c2.072,0.009,3.99,0.416,5.756,1.163c2.649,1.12,4.933,3.005,6.538,5.382
+	c1.596,2.378,2.512,5.162,2.512,8.27C212.663,477.327,212.256,479.246,211.508,481.02z"/>
+                                    <path class="st0" d="M419.935,444.785c-5.849-3.964-12.973-6.283-20.545-6.283c-5.043,0-9.917,1.028-14.314,2.896
+	c-6.605,2.792-12.192,7.445-16.156,13.303c-3.965,5.841-6.292,12.972-6.283,20.546c0,5.043,1.028,9.908,2.895,14.314
+	c2.802,6.606,7.438,12.2,13.295,16.156c5.858,3.956,12.99,6.291,20.563,6.283c5.042,0.008,9.898-1.028,14.296-2.896
+	c6.614-2.801,12.209-7.436,16.165-13.295c3.956-5.858,6.282-12.989,6.282-20.562c0-5.043-1.036-9.9-2.895-14.297
+	C430.437,454.336,425.793,448.75,419.935,444.785z M413.042,481.02c-1.121,2.64-3.014,4.924-5.383,6.52
+	c-2.377,1.604-5.162,2.521-8.268,2.53c-2.08,0-4.008-0.416-5.774-1.163c-2.632-1.112-4.924-3.014-6.52-5.382
+	c-1.596-2.378-2.522-5.171-2.53-8.278c0-2.072,0.424-3.99,1.163-5.756c1.112-2.649,3.013-4.933,5.374-6.529
+	c2.378-1.604,5.179-2.521,8.287-2.53c2.071,0.009,3.989,0.416,5.756,1.163c2.648,1.12,4.924,3.005,6.528,5.382
+	c1.596,2.378,2.522,5.162,2.522,8.27C414.196,477.327,413.789,479.246,413.042,481.02z"/>
+                                </g>
+</svg>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
 
-
-        <!--Mobile Menu-->
-        <div class="bs-canvas bs-canvas-left position-fixed bg-light h-100 ml-0">
-            <header class="bs-canvas-header d-flex justify-content-between align-items-center p-3 bg-dark">
-                <h4 class="mb-0 text-white">Categories</h4>
-                <button type="button" class="bs-canvas-close close text-white" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </header>
-
-            <div class="bs-canvas-content p-3">
-                <div class="cat_menu_m">
-                    <ul class="list-unstyled mb-0">
-
-                        
-                        <li class="border-bottom">
-                            <a href="<?php echo e(route('home')); ?>" class="text-dark font-weight-bold">Home</a>
-                        </li>
-
-                        
-                        <?php $__currentLoopData = $categories->whereNull('parent_id'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <li class="border-bottom">
-                                <a href="<?php echo e(route('category.show', $cat->id)); ?>" class="text-dark font-weight-bold d-block">
-                                    <?php echo e($cat->category_name); ?>
-
-                                </a>
-
-                                
-                                <?php $subItems = $categories->where('parent_id', $cat->id); ?>
-                                <?php if($subItems->isNotEmpty()): ?>
-                                    <ul class="list-unstyled pl-3">
-                                        <?php $__currentLoopData = $subItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sub): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <li class="d-flex align-items-center mb-1">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                                                    fill="none" stroke-linecap="round" stroke-linejoin="round"
-                                                    class="mr-1 text-secondary">
-                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                                    <path d="M9 6l6 6l-6 6"/>
-                                                </svg>
-                                                <a href="<?php echo e(route('category.show', $sub->id)); ?>" class="text-muted">
-                                                    <?php echo e($sub->category_name); ?>
-
-                                                </a>
-                                            </li>
-                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                    </ul>
-                                <?php endif; ?>
-                            </li>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-
-                    </ul>
-
-                    
-                </div>
-            </div>
+        <div class="cat_menu_m">
+            <ul>
+                <li>
+                    <a href="<?php echo e(route('home')); ?>">Home</a>
+                </li>
+                <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <li>
+                        <a href="<?php echo e(route('category.show', $cat->id)); ?>"><?php echo e($cat->category_name ?? $cat->name ?? ''); ?></a>
+                    </li>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </ul>
         </div>
-
 
         <div class="search-form-m">
             <form action="<?php echo e(route('search')); ?>" method="get">
-                
-                <input type="text" name="query" class="form-control" placeholder="সার্চ করুন" autocomplete="off" value="<?php echo e(request('query', '')); ?>">
+                <input type="text" name="query" class="form-control" placeholder="সার্চ করুন" autocomplete="off">
                 <button type="submit">
                     <i class="fa fa-search"></i>
                 </button>
             </form>
-            
             <button class="search_btnclose">
                 <i class="fa fa-times-circle"></i>
             </button>
         </div>
     </div>
 
-    
-
-
     <div class="header-bottom d-md-block d-none">
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
                     <div class="cat_menu">
-                        <ul class="menu">
+                        <ul>
                             <li>
                                 <a href="<?php echo e(route('home')); ?>">Home</a>
                             </li>
-                            <?php $__currentLoopData = $categories->where('parent_id', null); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <li class="has-submenu">
-                                    <a href="<?php echo e(route('category.show', $cat->id)); ?>"><?php echo e($cat->category_name); ?>
-
-                                        <?php if($categories->where('parent_id', $cat->id)->count() > 0): ?>
-                                            <i class="fa fa-caret-down submenu-icon"></i>
-                                        <?php endif; ?>
-                                    </a>
-                                    
-                                    <?php
-                                        $subcats = $categories->where('parent_id', $cat->id);
-                                    ?>
-                                    <?php if($subcats->count() > 0): ?>
-                                        <ul class="submenu">
-                                            <?php $__currentLoopData = $subcats; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sub): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                <li>
-                                                    <a href="<?php echo e(route('category.show', $sub->id)); ?>"><?php echo e($sub->category_name); ?></a>
-                                                </li>
-                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                        </ul>
-                                    <?php endif; ?>
+                            <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <li>
+                                    <a href="<?php echo e(route('category.show', $cat->id)); ?>"><?php echo e($cat->category_name ?? $cat->name ?? ''); ?></a>
                                 </li>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </ul>
@@ -290,72 +182,5 @@
             </div>
         </div>
     </div>
-
-    <style>
-        .header-bottom{
-            padding: 0;
-        }
-        .cat_menu ul.menu {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-flow: wrap;
-        }
-
-        .cat_menu ul.menu li {
-            position: relative;
-        }
-
-        .cat_menu ul.menu li a {
-            text-decoration: none;
-            color: #333;
-            display: block;
-        }
-
-        .cat_menu ul.menu li .submenu {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            list-style: none;
-            background: #fff;
-            min-width: 180px;
-            z-index: 99;
-        }
-
-        .cat_menu ul.menu li .submenu li a {
-            padding: 0px 8px;
-        }
-        .cat_menu ul.menu li.has-submenu:hover {
-            background: #1b1b1b;
-        }
-        .cat_menu ul.menu li.has-submenu:hover > a{
-            color: #e6e6e6;
-        }
-
-        .cat_menu ul.menu li:hover .submenu {
-            display: flex;
-            flex-direction: column;
-        }
-        .cat_menu ul.menu li .submenu li:hover {
-            background: #1b1b1b;
-        }
-        .cat_menu ul.menu li .submenu li:hover a {
-            color: #e6e6e6;
-        }
-
-        .cat_menu ul.menu li.has-submenu .submenu-icon {
-            margin-left: 4px;
-            font-size: 14px;
-            transition: transform 0.3s ease;
-        }
-        /* Rotate icon when hovering */
-        .cat_menu ul.menu li.has-submenu:hover .submenu-icon {
-            transform: rotate(180deg);
-        }
-
-
-    </style>
 </header>
 <?php /**PATH D:\xampp\htdocs\cache-newmartbd\resources\views/inc/header.blade.php ENDPATH**/ ?>

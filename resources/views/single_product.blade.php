@@ -1,13 +1,56 @@
-@extends('frontEnd.layouts.master')
+@extends('layouts.master')
 
 @section('title')
     {{$data->name}}
 @endsection
-{{--@section('fb_share')
-    <div id="fb-root"></div>
-    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v12.0&appId=784363395789860&autoLogAppEvents=1"
-            nonce="txEoFmhv"></script>
-@endsection--}}
+
+@section('tracking')
+    @if(session()->has('api_add_to_cart'))
+        <script>
+            dataLayer.push({ecommerce: null});
+            dataLayer.push({
+                event: "add_to_cart",
+                ecommerce: {
+                    currency: "BDT",
+                    value: {{ session('api_add_to_cart_data')['value'] ?? 0 }},
+                    items: {!! session('api_add_to_cart_data')['products'] ?? '[]' !!}
+                }
+            });
+            if (typeof fbq === 'function') {
+                var addToCartItems = {!! session('api_add_to_cart_data')['products'] ?? '[]' !!};
+                fbq('track', 'AddToCart', {
+                    content_ids: addToCartItems.map(function (item) { return item.item_id; }),
+                    content_name: addToCartItems.length ? addToCartItems[0].item_name : '',
+                    content_type: 'product',
+                    value: {{ session('api_add_to_cart_data')['value'] ?? 0 }},
+                    currency: 'BDT'
+                });
+            }
+        </script>
+    @endif
+    <script>
+        var viewItemItems = {!! session('api_view_item_data')['products'] ?? '[]' !!};
+        dataLayer.push({ecommerce: null});
+        dataLayer.push({
+            event: "view_item",
+            ecommerce: {
+                currency: "BDT",
+                value: {{ session('api_view_item_data')['value'] ?? 0 }},
+                items: {!! session('api_view_item_data')['products'] ?? '[]' !!}
+            }
+        });
+        if (typeof fbq === 'function') {
+            fbq('track', 'ViewContent', {
+                content_ids: viewItemItems.map(function (item) { return item.item_id; }),
+                content_name: viewItemItems.length ? viewItemItems[0].item_name : '',
+                content_type: 'product',
+                value: {{ session('api_view_item_data')['value'] ?? 0 }},
+                currency: 'BDT'
+            });
+        }
+    </script>
+@endsection
+
 @section('body')
     <section>
         <div class="category_breadcrumb">
@@ -30,13 +73,6 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-4 col-12 mb-md-3 mb-2">
-                        {{--@php
-                            if ($data->gallery_images){
-                                $photos = explode(',', $data->gallery_images);
-                            }else{
-                                $photos = [];
-                            }
-                        @endphp--}}
                         <div id="sing_prod_img_slider" class="carousel slide" data-ride="carousel">
                             @if($data->gallery_images)
                                 <ol class="carousel-indicators">
@@ -50,7 +86,7 @@
                             @endif
                             <div class="carousel-inner">
                                 <div class="carousel-item active">
-                                    <img src="{{$data->get_image ? asset($data->get_image->file_url) : asset('frontEnd/images/no_image.png')}}" class="d-block w-100"
+                                    <img src="{{$data->image_url ?? asset('frontEnd/images/no_image.png')}}" class="d-block w-100"
                                          alt="">
                                 </div>
                                 @if($data->gallery_images)
@@ -90,12 +126,6 @@
                         <h4 class="single_prod_in_stock">স্টক : @if($data->stock > 0)<span class="text-success">ইন স্টক</span> @else <span
                                 class="text-danger">স্টক আউট</span>@endif</h4>
 
-                        {{--<div class="qty_div">
-                            <a style="color: black" href="{{route('cart.item.minus',$data->id)}}"><i class="fa fa-minus" id="qty_minus"></i></a>
-                            <input type="text" name="qty" id="qty" min="1" value="{{$qty ?? 1}}" readonly>
-                            <a style="color: black" href="{{route('cart.item.plus',$data->id)}}"><i class="fa fa-plus" id="qty_plus"></i></a>
-                        </div>--}}
-
                         <form action="{{route('add.cart',$data->id)}}" method="post">
                             @csrf
                             <input type="hidden" name="id" id="id" value="{{$data->id}}">
@@ -121,20 +151,22 @@
                                 <div class="attributes mt-3">
                                     <div class="item">
 
-                                        @foreach($data->get_choice_attributes() as $key => $att)
+                                        @foreach($data->attributes as $key => $att)
+                                            @php $att = (object) $att; @endphp
                                             <div class="row mb-2">
                                                 <div class="col-md-12 col-12">
-                                                    <label class="mb-1"><b>{{$att['attribute_name']}}</b></label><br>
-                                                    <input type="hidden" name="attribute_id[]" value="{{$att['attribute_id']}}">
-                                                    @php($k=0)
-                                                    @foreach($att['values'] as $key2 => $attr_item)
-                                                        <input type="radio" id="val_{{$key}}{{$key2}}" name="attribute_item_id[{{$att['attribute_id']}}][]"
-                                                               value="{{$attr_item}}"
+                                                    <label class="mb-1"><b>{{$att->attribute_name}}</b></label><br>
+                                                    <input type="hidden" name="attribute_id[]" value="{{$att->attribute_id}}">
+                                                    @php $k = 0; @endphp
+                                                    @foreach($att->values as $key2 => $attr_item)
+                                                        @php $attr_item = (object) $attr_item; $attrName = $attr_item->name ?? ''; @endphp
+                                                        <input type="radio" id="val_{{$key}}{{$key2}}" name="attribute_item_id[{{$att->attribute_id}}][]"
+                                                               value="{{$attrName}}"
                                                                class="attr_checkbox" {{$k==0?'checked':""}}>
                                                         <label class="mb-0" for="val_{{$key}}{{$key2}}">
-                                                            <span>{{$attr_item}}</span>
+                                                            <span>{{$attrName}}</span>
                                                         </label>
-                                                        @php($k++)
+                                                        @php $k++; @endphp
                                                     @endforeach
                                                 </div>
                                             </div>
@@ -154,7 +186,7 @@
 
 
                         <div class="mt-md-3 mt-2">
-                            @if($web_settings->website_phone)
+                            @if($web_settings->website_phone ?? null)
                                 <h4 class="font-weight-bold">
                                     <a class="btn btn-success call-btn" href="tel:{{$web_settings->website_phone}}">
                                         <span>ফোনে অর্ডার করতে ক্লিক করুন</span><br>
@@ -164,7 +196,7 @@
                                 </h4>
                             @endif
 
-                            @if($web_settings->website_phone2)
+                            @if($web_settings->website_phone2 ?? null)
                                 <h4 class="font-weight-bold">
                                     <a class="btn btn-success call-btn" href="tel:{{$web_settings->website_phone2}}">
                                         <span>ফোনে অর্ডার করতে ক্লিক করুন</span><br>
@@ -174,7 +206,7 @@
                                 </h4>
                             @endif
 
-                            @if($web_settings->website_phone3)
+                            @if($web_settings->website_phone3 ?? null)
                                 <h4 class="font-weight-bold">
                                     <a class="btn btn-success call-btn" href="tel:{{$web_settings->website_phone3}}">
                                         <span>ফোনে অর্ডার করতে ক্লিক করুন</span><br>
@@ -184,10 +216,6 @@
                                 </h4>
                             @endif
                         </div>
-
-                        {{--<div class="fb-share-button mt-3" data-href="https://developers.facebook.com/docs/plugins/" data-layout="button" data-size="large">
-                            <a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore"></a>
-                        </div>--}}
 
                         @if($shipping_methods->count() > 0)
                             <div class="col-12 mt-3 delivery_details" style="padding: 0">
@@ -207,54 +235,10 @@
                                 </table>
                             </div>
                         @endif
-                        <h6 class="font-weight-bold text-danger mt-md-3 mt-2">বিকাশ নাম্বার : {{$web_settings->bkash_merchant_numb}}</h6>
+                        @if($web_settings->bkash_merchant_numb ?? null)
+                            <h6 class="font-weight-bold text-danger mt-md-3 mt-2">বিকাশ নাম্বার : {{$web_settings->bkash_merchant_numb}}</h6>
+                        @endif
                     </div>
-
-                    {{--<div class="col-md-3 mb-3">
-                        <div class="features">
-                            <table>
-                                <tbody>
-                                <tr>
-                                    <td class="icon"><i class="fa fa-thumbs-up" style="color: #666"></i></td>
-                                    <td class="text">100% original products</td>
-                                </tr>
-
-                                <tr>
-                                    <td class="icon"><i class="fa fa-money" style="color: #666"></i></td>
-                                    <td class="text">Pay cash on delivery</td>
-                                </tr>
-
-                                <tr>
-                                    <td class="icon"><i class="fa fa-shopping-cart" style="color: #666;vertical-align: top"></i></td>
-                                    <td class="text">Delivery within: 2-3 business days</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="feature-products d-md-block d-none">
-                            <p>প্রয়োজনীয় প্রোডাক্ট</p>
-                            <div class="feature-products-wrapper">
-                                <table>
-                                    @foreach($feature_prod as $item)
-                                        <tr>
-                                            <td class="img">
-                                                <a href="{{route('single.product',[$item->slug,$item->id])}}">
-                                                    <img width="50" src="{{$item->get_thumb?asset($item->get_thumb->file_url):asset('frontEnd/images/no_image.png')}}"
-                                                         alt="">
-                                                </a>
-                                            </td>
-                                            <td class="title">
-                                                <a href="{{route('single.product',[$item->slug,$item->id])}}" class="text-dark">
-                                                    {{$item->name}}
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </table>
-                            </div>
-                        </div>
-                    </div>--}}
                 </div>
 
                 <div class="row">
@@ -266,8 +250,8 @@
                         </ul>
                         <div class="tab-content tab-content-mod">
                             <div class="tab-pane active">
-                                <div>
-                                    {!! $data->description !!}
+                                <div class="product-description-content">
+                                    <div class="text-muted">পন্যের বিবরণ লোড হচ্ছে...</div>
                                 </div>
                             </div>
                         </div>
@@ -284,8 +268,8 @@
                     @foreach($related_prod as $item)
                         <div class="col-md-2 col-6 main-product">
                             <div class="main-product-inner-wrapper text-center">
-                                <a href="{{route('single.product',[$item->slug,$item->id])}}">
-                                    <img src="{{$item->get_thumb ? asset($item->get_thumb->file_url): asset('frontEnd/images/no_image.png')}}" alt="{{$item->name}}">
+                                <a href="{{route('product.details',[$item->slug,$item->id])}}">
+                                    <img src="{{$item->image_url ?? asset('frontEnd/images/no_image.png')}}" alt="{{$item->name}}">
                                 </a>
                                 @if($item->sale_price != 0)
                                     <p class="mb-0" style="text-decoration: line-through;color: #b8b8b8">{{$web_settings->currency_sign}} {{$item->price}}</p>
@@ -293,8 +277,8 @@
                                 @else
                                     <p class="font-weight-bold mb-0" style="margin-top: 24px;color: #fca204">{{$web_settings->currency_sign}} {{$item->price}}</p>
                                 @endif
-                                <p class="mb-0 prod_name"><a href="{{route('single.product',[$item->slug,$item->id])}}">{{$item->name}}</a></p>
-                                <form action="{{route('add.cart',$data->id)}}" method="post">
+                                <p class="mb-0 prod_name"><a href="{{route('product.details',[$item->slug,$item->id])}}">{{$item->name}}</a></p>
+                                <form action="{{route('add.cart',$item->id)}}" method="post">
                                     @csrf
                                     <input type="hidden" name="qty" value="1">
                                     <input type="submit" class="btn btn-sm w-100 mb-2 order_now_btn" name="order_now" value="অর্ডার করুন">
@@ -310,67 +294,45 @@
     </section>
 @endsection
 
-
-
 @section('script')
-    @if (session()->has('add_to_cart_event'))
-        <script>
-            (function() {
-                var eventData = @json(session('add_to_cart_event'));
-                dataLayer.push({ ecommerce: null });
-                dataLayer.push({
-                    'event': 'add_to_cart',
-                    'ecommerce': {
-                        'currency': 'BDT',
-                        'value': eventData.price * eventData.quantity,
-                        'items': [{
-                            'item_id': String(eventData.id),
-                            'item_name': eventData.name,
-                            'item_category': eventData.category,
-                            'price': eventData.price,
-                            'quantity': eventData.quantity
-                        }]
+    <script>
+        var productVariants = {!! json_encode($data->get_product_attributes ?? $data->get_attributes ?? []) !!};
+        var baseProductSku = @json($data->sku ?? '');
+        var productDescriptionUrl = @json(rtrim(env('IMS_APP_BASE_URL'), '/') . '/api/v1/app/product-description/' . $data->id);
+
+        function loadProductDescription() {
+            var descriptionContent = $('.product-description-content');
+
+            fetch(productDescriptionUrl, {
+                headers: {
+                    Accept: 'application/json'
+                }
+            })
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('Product description request failed with status ' + response.status);
                     }
-                });
+                    return response.json();
+                })
+                .then(function (data) {
+                    var description = data && data.success && data.description
+                        ? data.description.description
+                        : null;
 
-                fbq('track', 'AddToCart', {
-                    content_name: eventData.name,
-                    content_category: eventData.category,
-                    content_ids: [String(eventData.id)],
-                    content_type: 'product',
-                    value: eventData.price * eventData.quantity,
-                    currency: 'BDT'
-                });
-            })();
-        </script>
-    @endif
-    <script>
-        dataLayer.push({ ecommerce: null });
-        dataLayer.push({
-            'event': 'view_item',
-            'ecommerce': {
-                'currency': 'BDT',
-                'value': {{ $data->sale_price != 0 ? $data->sale_price : $data->price }},
-                'items': [{
-                    'item_id': '{{ $data->id }}',
-                    'item_name': '{{ $data->name }}',
-                    'item_category': '{{ $data->get_categories->first()->category_name ?? '' }}',
-                    'price': {{ $data->sale_price != 0 ? $data->sale_price : $data->price }},
-                    'quantity': 1
-                }]
-            }
-        });
+                    if (typeof description !== 'string') {
+                        throw new Error('Product description was not included in the API response');
+                    }
 
-        fbq('track', 'ViewContent', {
-            content_name: '{{ $data->name }}',
-            content_category: '{{ $data->get_categories->first()->category_name ?? '' }}',
-            content_ids: ['{{ $data->id }}'],
-            content_type: 'product',
-            value: {{ $data->sale_price != 0 ? $data->sale_price : $data->price }},
-            currency: 'BDT'
-        });
-    </script>
-    <script>
+                    descriptionContent.html(description);
+                })
+                .catch(function (error) {
+                    console.error('Unable to load product description:', error);
+                    descriptionContent.html(
+                        '<div class="alert alert-danger mb-0">পন্যের বিবরণ লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।</div>'
+                    );
+                });
+        }
+
         $('#qty_plus').on('click', function () {
             var qty = $('#qty').val();
             qty++;
@@ -389,6 +351,8 @@
         });
 
         $(document).ready(function () {
+            loadProductDescription();
+
             var choice_attributes2 = [];
             $(".attr_checkbox:checked").each(function () {
                 choice_attributes2.push($(this).val());

@@ -20,25 +20,93 @@
     {{--Owl-Carousel--}}
     <link rel="stylesheet" href="{{asset('frontEnd/plugins/owl-carousel/owl.carousel.min.css')}}">
     <link rel="stylesheet" href="{{asset('frontEnd/plugins/owl-carousel/owl.theme.default.min.css')}}">
+
     @yield('style')
 
-    {!! $web_settings->fb_pixel ?? null !!}
+    <script>
+        window.dataLayer = window.dataLayer || [];
+    </script>
 
-    {{-- GTM HEAD --}}
-    {!! $web_settings->gtm_head ?? null !!}
+    <!-- Google Tag Manager (GTM) -->
+    @if (isset($globalSetting['google_trackings']) && is_array($globalSetting['google_trackings']))
+        @foreach ($globalSetting['google_trackings'] as $gtm)
+            @if (!empty($gtm['tracking_id']) && isset($gtm['status']) && $gtm['status'] == 1)
+                <script>
+                    (function(w, d, s, l, i) {
+                        w[l] = w[l] || [];
+                        w[l].push({
+                            'gtm.start': new Date().getTime(),
+                            event: 'gtm.js'
+                        });
+                        var f = d.getElementsByTagName(s)[0],
+                            j = d.createElement(s),
+                            dl = l != 'dataLayer' ? '&l=' + l : '';
+                        j.async = true;
+                        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+                        f.parentNode.insertBefore(j, f);
+                    })
+                    (window, document, 'script', 'dataLayer', '{{ $gtm['tracking_id'] }}');
+                </script>
+            @endif
+        @endforeach
+    @endif
+
+    <!-- Facebook Pixel -->
+    @if (isset($globalSetting['fb_pixels']) && is_array($globalSetting['fb_pixels']))
+        @foreach ($globalSetting['fb_pixels'] as $pixel)
+            @if (!empty($pixel['pixel_id']) && isset($pixel['status']) && $pixel['status'] == 1)
+                <script>
+                    ! function(f, b, e, v, n, t, s) {
+                        if (f.fbq) return;
+                        n = f.fbq = function() {
+                            n.callMethod ?
+                                n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+                        };
+                        if (!f._fbq) f._fbq = n;
+                        n.push = n;
+                        n.loaded = !0;
+                        n.version = '2.0';
+                        n.queue = [];
+                        t = b.createElement(e);
+                        t.async = !0;
+                        t.src = v;
+                        s = b.getElementsByTagName(e)[0];
+                        s.parentNode.insertBefore(t, s)
+                    }(window, document, 'script',
+                        'https://connect.facebook.net/en_US/fbevents.js');
+                    fbq('init', '{{ $pixel['pixel_id'] }}');
+                    fbq('track', 'PageView');
+                </script>
+                <noscript>
+                    <img height="1" width="1" style="display:none"
+                        src="https://www.facebook.com/tr?id={{ $pixel['pixel_id'] }}&ev=PageView&noscript=1" />
+                </noscript>
+            @endif
+        @endforeach
+    @endif
+
+    @yield('tracking')
 </head>
 <body>
-{{-- GTM BODY --}}
-{!! $web_settings->gtm_body ?? null !!}
+    <!-- Google Tag Manager Data Layer (noscript) -->
+    @if (isset($globalSetting['google_trackings']) && is_array($globalSetting['google_trackings']))
+        @foreach ($globalSetting['google_trackings'] as $gtm)
+            @if (!empty($gtm['tracking_id']) && isset($gtm['status']) && $gtm['status'] == 1)
+                <noscript>
+                    <iframe src="https://www.googletagmanager.com/ns.html?id={{ $gtm['tracking_id'] }}" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+                </noscript>
+            @endif
+        @endforeach
+    @endif
+    <!-- End Google Tag Manager (noscript) -->
 
-@yield('fb_share')
-<div class="main-wrapper">
-    @include('frontEnd.inc.header')
+    <div class="main-wrapper">
+        @include('inc.header')
 
-    @yield('body')
+        @yield('body')
 
-    @include('frontEnd.inc.footer')
-</div>
+        @include('inc.footer')
+    </div>
 
 {{--<script src="{{asset('frontEnd/js/jquery.slim.min.js')}}"></script>--}}
 <script src="{{asset('frontEnd/js/jquery-3.3.1.min.js')}}"></script>

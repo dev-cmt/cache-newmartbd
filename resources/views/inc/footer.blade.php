@@ -7,16 +7,16 @@
                         <div class="social_links">
                             <ul>
                                 <li>
-                                    <a class="facebook" target="_blank" href="{{$web_settings->website_facebook??""}}"><i class="fa fa-facebook"></i></a>
+                                    <a class="facebook" target="_blank" href="{{$web_settings->website_facebook ?? ''}}"><i class="fa fa-facebook"></i></a>
                                 </li>
                                 <li>
-                                    <a class="youtube" target="_blank" href="{{$web_settings->website_youtube??""}}"><i class="fa fa-youtube"></i></a>
+                                    <a class="youtube" target="_blank" href="{{$web_settings->website_youtube ?? ''}}"><i class="fa fa-youtube"></i></a>
                                 </li>
                                 <li>
-                                    <a class="instagram" target="_blank" href="{{$web_settings->website_instagram??""}}"><i class="fa fa-instagram"></i></a>
+                                    <a class="instagram" target="_blank" href="{{$web_settings->website_instagram ?? ''}}"><i class="fa fa-instagram"></i></a>
                                 </li>
                                 <li>
-                                    <a class="twitter" target="_blank" href="{{$web_settings->website_linkedin??""}}"><i class="fa fa-linkedin"></i></a>
+                                    <a class="twitter" target="_blank" href="{{$web_settings->website_linkedin ?? ''}}"><i class="fa fa-linkedin"></i></a>
                                 </li>
                             </ul>
                         </div>

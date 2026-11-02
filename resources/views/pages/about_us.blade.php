@@ -1,4 +1,4 @@
-@extends('frontEnd.layouts.master')
+@extends('layouts.master')
 
 @section('title')
     About Us
@@ -12,7 +12,7 @@
                     <div class="col-12 mb-md-0 mb-4">
                         <h5 class="font-weight-bold">About Us</h5>
                         <div class="p-2">
-                            {!! $data->about_us !!}
+                            {!! $content !!}
                         </div>
                     </div>
                 </div>

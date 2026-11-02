@@ -67,6 +67,13 @@ class AppServiceProvider extends ServiceProvider
                     'currency_sign'          => $store['currency_sign'] ?? '৳',
                     'fb_pixel'               => null,
                     'get_logo'               => !empty($store['logo_url']) ? (object) ['file_url' => $store['logo_url']] : null,
+                    // Social media links — try common API field name variants
+                    'website_facebook'       => $store['website_facebook'] ?? $store['facebook_url'] ?? $store['facebook'] ?? $store['fb_url'] ?? null,
+                    'website_youtube'        => $store['website_youtube'] ?? $store['youtube_url'] ?? $store['youtube'] ?? null,
+                    'website_instagram'      => $store['website_instagram'] ?? $store['instagram_url'] ?? $store['instagram'] ?? null,
+                    'website_linkedin'       => $store['website_linkedin'] ?? $store['linkedin_url'] ?? $store['linkedin'] ?? null,
+                    // bKash merchant number — try common field name variants
+                    'bkash_merchant_numb'    => $store['bkash_merchant_numb'] ?? $store['bkash_number'] ?? $store['bkash_no'] ?? $store['bkash'] ?? null,
                 ];
 
                 // Build fb_pixel HTML from the fb_pixels array returned by API

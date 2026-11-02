@@ -5,7 +5,7 @@ if (!function_exists('apiCall')) {
     {
         $url = rtrim(env('IMS_APP_BASE_URL'), '/') . '/' . ltrim($endpoint, '/');
 
-        dd($data);
+        // dd($data);
 
         $methodUpper = strtoupper($method);
 

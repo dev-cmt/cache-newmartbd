@@ -195,6 +195,8 @@ class HomeController extends Controller
         }
 
         // Variant Text Generation
+        // $variantText  = human-readable label, e.g. "Shoe Size: 38, Color: Red"
+        // $variantRawValue = only the selected values,  e.g. "38" or "38-Red"
         $selectedAttributes = (array) $request->input('attribute_item_id', []);
         $variantText = collect((array) $product->attributes)->map(function ($attribute) use ($selectedAttributes) {
             $attribute = (object) $attribute;
@@ -204,6 +206,14 @@ class HomeController extends Controller
         })->filter()->implode(', ');
         $variantText = $variantText ?: ($choiceAttrs ? str_replace(',', '-', $choiceAttrs) : ($variant->variant ?? null));
 
+        // Build a values-only string: e.g. "42" or "42-Red" (no attribute name prefix)
+        $variantRawValue = collect((array) $product->attributes)->map(function ($attribute) use ($selectedAttributes) {
+            $attribute = (object) $attribute;
+            $value = $selectedAttributes[$attribute->attribute_id] ?? '';
+            return is_array($value) ? reset($value) : $value;
+        })->filter()->implode('-');
+        $variantRawValue = $variantRawValue ?: ($variantValue ?: ($variant->variant ?? null));
+
         $imageUrl = $product->image_url ?? ($product->get_thumb ? asset($product->get_thumb->file_url) : null);
         $slug     = $product->slug ?? '';
         $sku      = $variant->variant_sku ?? ($product->sku ?? '');
@@ -212,8 +222,8 @@ class HomeController extends Controller
 
         $attributes = [
             'sku'           => $sku,
-            'variant'       => $variantText,
-            'variant_value' => $variantValue ?: $variantText,
+            'variant'       => $variantText,       // "Shoe Size: 42" — human label
+            'variant_value' => $variantRawValue,   // "42"            — value only
             'slug'          => $slug,
             'image'         => $imageUrl,
         ];

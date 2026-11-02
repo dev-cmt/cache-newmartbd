@@ -1,4 +1,4 @@
-@extends('frontEnd.layouts.master')
+@extends('layouts.master')
 
 @section('title')
     Order Confirmed
@@ -14,6 +14,49 @@
         </style>
     @endsection
 @endif
+
+@section('tracking')
+    @if(session()->has('api_purchase_data'))
+        <script>
+            dataLayer.push({ ecommerce: null });  // Clear the previous ecommerce object.
+            dataLayer.push({
+                event: "purchase",
+                customer: {
+                    id: "{{ session('api_purchase_data')['customer_id'] ?? '' }}",
+                    first_name: "{{ session('api_purchase_data')['full_name'] ?? '' }}",
+                    full_name: "{{ session('api_purchase_data')['full_name'] ?? '' }}",
+                    email: "{{ session('api_purchase_data')['email'] ?? '' }}",
+                    phone: "{{ session('api_purchase_data')['phone'] ?? '' }}",
+                    address: {
+                        address_summary: "{{ session('api_purchase_data')['address_summary'] ?? '' }}",
+                        address1: "{{ session('api_purchase_data')['address_summary'] ?? '' }}",
+                        country: "Bangladesh"
+                    }
+                },
+                ecommerce: {
+                    transaction_id: "{{ session('api_purchase_data')['invoice_id'] ?? '' }}",
+                    value: {{ floatval(number_format(session('api_purchase_data')['sub_total'] ?? 0, 2, '.', '')) }},
+                    tax: 0,
+                    shipping: {{ floatval(number_format(session('api_purchase_data')['shipping_cost'] ?? 0, 2, '.', '')) }},
+                    currency: "BDT",
+                    coupon: "",
+                    items: {!! session('api_purchase_data')['products'] ?? '[]' !!}
+                }
+            });
+            if (typeof fbq === 'function') {
+                var purchaseItems = {!! session('api_purchase_data')['products'] ?? '[]' !!};
+                fbq('track', 'Purchase', {
+                    content_ids: purchaseItems.map(function (item) { return item.item_id; }),
+                    content_type: 'product',
+                    value: {{ floatval(number_format(session('api_purchase_data')['sub_total'] ?? 0, 2, '.', '')) + floatval(number_format(session('api_purchase_data')['shipping_cost'] ?? 0, 2, '.', '')) }},
+                    currency: 'BDT',
+                    transaction_id: {!! json_encode((string) (session('api_purchase_data')['invoice_id'] ?? '')) !!}
+                });
+            }
+        </script>
+    @endif
+@endsection
+
 @section('body')
     <section class="py-md-5 confirm-order">
         <div class="cart-section">
@@ -34,53 +77,4 @@
             </div>
         </div>
     </section>
-@endsection
-
-@section('script')
-    @if (isset($order))
-        <script>
-            dataLayer.push({ ecommerce: null });
-            dataLayer.push({
-                'event': 'purchase',
-                'action_source': 'website',
-                'order_id': '{{ $order->invoice_id }}',
-                'event_id': '{{ $order->id }}',
-                'ecommerce': {
-                    'transaction_id': '{{ $order->invoice_id }}',
-                    'affiliation': '{{ $web_settings->site_name ?? 'Unisale Mart' }}',
-                    'value': {{ $order->total }},
-                    'tax': 0,
-                    'shipping': {{ $order->shipping_cost ?? 0 }},
-                    'currency': 'BDT',
-                    'items': [
-                        @foreach ($order->get_products as $item)
-                        {
-                            'item_id': '{{ $item->get_product->id ?? '' }}',
-                            'item_name': '{{ $item->get_product->name ?? '' }}',
-                            'item_category': '{{ $item->get_product->get_categories->first()->category_name ?? '' }}',
-                            'price': {{ $item->price }},
-                            'quantity': {{ $item->qty }}
-                        },
-                        @endforeach
-                    ]
-                },
-                'customer_information': {
-                    'first_name': '{{ $order->customer_name ?? '' }}',
-                    'last_name': '{{ $order->customer_name ?? '' }}',
-                    'phone': '{{ $order->customer_phone ?? '' }}',
-                    'address_1': '{{ $order->customer_address ?? '' }}',
-                    'city': '{{ $order->customer_address ?? '' }}',
-                    'country': 'Bangladesh',
-                    'country_code': 'BD'
-                }
-            });
-
-            fbq('track', 'Purchase', {
-                content_ids: [@foreach ($order->get_products as $item) '{{ $item->get_product->id ?? '' }}', @endforeach],
-                content_type: 'product',
-                value: {{ $order->total }},
-                currency: 'BDT'
-            });
-        </script>
-    @endif
 @endsection

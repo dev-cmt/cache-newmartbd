@@ -1,7 +1,5 @@
-
-
 <?php $__env->startSection('title'); ?>
-    Delivery Policy
+    Return Policy
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('body'); ?>
@@ -10,7 +8,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-12 mb-md-0 mb-4">
-                        <h5 class="font-weight-bold">Delivery Policy</h5>
+                        <h5 class="font-weight-bold">Return Policy</h5>
                         <div class="p-2">
                             <?php echo $content; ?>
 
@@ -22,4 +20,4 @@
     </section>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\xampp\htdocs\website2\resources\views/pages/delivery_policy.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\xampp\htdocs\cache-newmartbd\resources\views/pages/return_policy.blade.php ENDPATH**/ ?>

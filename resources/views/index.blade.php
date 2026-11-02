@@ -1,4 +1,4 @@
-@extends('frontEnd.layouts.master')
+@extends('layouts.master')
 
 @section('title')
     Home
@@ -14,8 +14,8 @@
         <div class="carousel-inner">
             @foreach($sliders as $key => $item)
                 <div class="carousel-item {{$key==0 ? "active":""}}">
-                    <img src="{{$item->get_img ? asset($item->get_img->file_url):asset('frontEnd/images/no_image.png')}}" class="d-block w-100"
-                         alt="">
+                    <img src="{{$item->image_url ? $item->image_url : asset('frontEnd/images/no_image.png')}}" class="d-block w-100"
+                         alt="{{$item->title ?? ''}}">
                 </div>
             @endforeach
         </div>
@@ -31,7 +31,7 @@
                             <ul>
                                 @foreach($categories as $cat)
                                     <li>
-                                        <a href="{{route('single.category',$cat->id)}}">{{$cat->category_name}}</a>
+                                        <a href="{{route('category.show',$cat->id)}}">{{$cat->category_name ?? $cat->name ?? ''}}</a>
                                     </li>
                                 @endforeach
                             </ul>
@@ -59,13 +59,13 @@
                     <div class="col-12">
                         <div class="hot-deals-inner-wrapper">
                             <div class="owl-carousel mb-3">
-                                @foreach($hot_deal_1 as $item)
-                                    <?php
-                                    $percentage = round(100 - (($item->sale_price / $item->price) * 100));
-                                    ?>
+                                @foreach($hot_deal as $item)
+                                    @php
+                                    $percentage = $item->price > 0 ? round(100 - (($item->sale_price / $item->price) * 100)) : 0;
+                                    @endphp
                                     <div class="main-product-inner-wrapper text-center">
-                                        <a href="{{route('single.product',[$item->slug,$item->id])}}">
-                                            <img src="{{$item->get_thumb ? asset($item->get_thumb->file_url) : asset('frontEnd/images/no_image.png')}}"
+                                        <a href="{{route('product.details',[$item->slug,$item->id])}}">
+                                            <img src="{{$item->image_url ?? asset('frontEnd/images/no_image.png')}}"
                                                  alt="{{$item->name}}">
                                         </a>
                                         @if($item->sale_price != 0)
@@ -74,7 +74,7 @@
                                         @else
                                             <p class="font-weight-bold mb-0" style="margin-top: 24px;color: #ed362c">{{$web_settings->currency_sign}} {{$item->price}}</p>
                                         @endif
-                                        <p class="mb-0 prod_name"><a href="{{route('single.product',[$item->slug,$item->id])}}">{{$item->name}}</a></p>
+                                        <p class="mb-0 prod_name"><a href="{{route('product.details',[$item->slug,$item->id])}}">{{$item->name}}</a></p>
                                         <form action="{{route('add.cart',$item->id)}}" method="post">
                                             @csrf
                                             <input type="hidden" name="qty" value="1">
@@ -102,8 +102,8 @@
                     @foreach($products as $item)
                         <div class="col-md-2 col-6 main-product">
                             <div class="main-product-inner-wrapper text-center">
-                                <a href="{{route('single.product',[$item->slug,$item->id])}}">
-                                    <img src="{{$item->get_thumb ? asset($item->get_thumb->file_url) : asset('frontEnd/images/no_image.png')}}" alt="{{$item->name}}">
+                                <a href="{{route('product.details',[$item->slug,$item->id])}}">
+                                    <img src="{{$item->image_url ?? asset('frontEnd/images/no_image.png')}}" alt="{{$item->name}}">
                                 </a>
                                 @if($item->sale_price != 0)
                                     <p class="mb-0" style="text-decoration: line-through;color: #b8b8b8">{{$web_settings->currency_sign}} {{$item->price}}</p>
@@ -111,7 +111,7 @@
                                 @else
                                     <p class="font-weight-bold mb-0" style="margin-top: 24px;color: #ed362c">{{$web_settings->currency_sign}} {{$item->price}}</p>
                                 @endif
-                                <p class="mb-0 prod_name"><a href="{{route('single.product',[$item->slug,$item->id])}}">{{$item->name}}</a></p>
+                                <p class="mb-0 prod_name"><a href="{{route('product.details',[$item->slug,$item->id])}}">{{$item->name}}</a></p>
                                 <form action="{{route('add.cart',$item->id)}}" method="post">
                                     @csrf
                                     <input type="hidden" name="qty" value="1">
@@ -148,17 +148,13 @@
                 responsive: {
                     0: {
                         margin: 10,
-                        items: 2,
-                        nav: true
+                        items: 2
                     },
                     600: {
-                        items: 3,
-                        nav: false
+                        items: 3
                     },
                     1000: {
-                        items: 6,
-                        nav: true,
-                        loop: false
+                        items: 5
                     }
                 }
             });
